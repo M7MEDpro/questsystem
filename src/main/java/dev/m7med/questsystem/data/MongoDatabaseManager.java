@@ -12,22 +12,10 @@ import org.bson.Document;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-
-/**
- * Manages the MongoDB connection and executes asynchronous database operations.
- */
 public class MongoDatabaseManager {
-
     private MongoClient mongoClient;
     private MongoDatabase database;
     private MongoCollection<Document> playerCollection;
-
-    /**
-     * Connects to the MongoDB server using the provided URI and database name.
-     *
-     * @param uri    The MongoDB connection string URI.
-     * @param dbName The name of the database.
-     */
     public void connect(String uri, String dbName) {
         try {
             mongoClient = MongoClients.create(uri);
@@ -38,25 +26,12 @@ public class MongoDatabaseManager {
             Questsystem.getInstance().getLogger().severe("Failed to connect to MongoDB: " + e.getMessage());
         }
     }
-
-    /**
-     * Disconnects from the MongoDB server, closing all connections.
-     */
     public void disconnect() {
         if (mongoClient != null) {
             mongoClient.close();
             Questsystem.getInstance().getLogger().info("Disconnected from MongoDB.");
         }
     }
-
-    /**
-     * Asynchronously loads player quest data from the database.
-     * If no existing data is found, a new empty PlayerQuestData instance is
-     * returned.
-     *
-     * @param uuid The UUID of the player.
-     * @return A CompletableFuture containing the player's quest data.
-     */
     public CompletableFuture<PlayerQuestData> loadPlayerData(UUID uuid) {
         return CompletableFuture.supplyAsync(() -> {
             Document doc = playerCollection.find(Filters.eq("_id", uuid.toString())).first();
@@ -66,15 +41,6 @@ public class MongoDatabaseManager {
             return PlayerQuestData.fromDocument(doc);
         });
     }
-
-    /**
-     * Asynchronously saves player quest data to the database using an upsert
-     * operation.
-     *
-     * @param data The PlayerQuestData instance to save.
-     * @return A CompletableFuture that completes when the save operation is
-     *         finished.
-     */
     public CompletableFuture<Void> savePlayerData(PlayerQuestData data) {
         return CompletableFuture.runAsync(() -> {
             Document doc = data.toDocument();

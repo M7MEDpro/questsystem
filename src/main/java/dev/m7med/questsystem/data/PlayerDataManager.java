@@ -13,55 +13,24 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * Handles the caching of player quest data in memory.
- * Listens to player join and quit events to load and save data efficiently.
- */
 public class PlayerDataManager implements Listener {
-
     private final MongoDatabaseManager mongoManager;
     private final Map<UUID, PlayerQuestData> cache;
-
-    /**
-     * Constructs a new PlayerDataManager and registers its listeners.
-     *
-     * @param mongoManager The MongoDB manager instance used for data retrieval and
-     *                     storage.
-     */
     public PlayerDataManager(MongoDatabaseManager mongoManager) {
         this.mongoManager = mongoManager;
         this.cache = new ConcurrentHashMap<>();
 
         Bukkit.getPluginManager().registerEvents(this, Questsystem.getInstance());
     }
-
-    /**
-     * Retrieves the cached quest data for a specific UUID.
-     *
-     * @param uuid The UUID of the player.
-     * @return The PlayerQuestData, or null if not currently cached.
-     */
     public PlayerQuestData getPlayerData(UUID uuid) {
         return cache.get(uuid);
     }
-
-    /**
-     * Retrieves the cached quest data for a specific Player object.
-     *
-     * @param player The online Player.
-     * @return The PlayerQuestData, or null if not currently cached.
-     */
     public PlayerQuestData getPlayerData(Player player) {
         return cache.get(player.getUniqueId());
     }
-
-    /**
-     * Saves all currently cached player data to the database synchronously.
-     * Intended for usage during server shutdown.
-     */
     public void saveAll() {
         for (PlayerQuestData data : cache.values()) {
-            mongoManager.savePlayerData(data).join(); // join on shutdown to ensure it saves
+            mongoManager.savePlayerData(data).join();
         }
     }
 

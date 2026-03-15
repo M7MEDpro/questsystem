@@ -10,10 +10,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class QuestsPlaceholderExpansion extends PlaceholderExpansion {
-
     private final Questsystem plugin;
     private final PlayerDataManager dataManager;
-
     public QuestsPlaceholderExpansion(Questsystem plugin, PlayerDataManager dataManager) {
         this.plugin = plugin;
         this.dataManager = dataManager;
@@ -47,10 +45,9 @@ public class QuestsPlaceholderExpansion extends PlaceholderExpansion {
 
         PlayerQuestData data = dataManager.getPlayerData(player.getUniqueId());
         if (data == null) {
-            return "0"; // Data not loaded yet
+            return "0";
         }
 
-        // Example: %questsystem_progress_mining_diamonds%
         if (params.startsWith("progress_")) {
             String questId = params.replace("progress_", "");
             QuestProgress progress = data.getActiveQuests().get(questId);
@@ -61,11 +58,10 @@ public class QuestsPlaceholderExpansion extends PlaceholderExpansion {
             return "0";
         }
 
-        // Example: %questsystem_completed_total%
         if (params.equals("completed_total")) {
             return String.valueOf(data.getCompletedQuests().size());
         }
 
-        return null; // Unknown placeholder
+        return null;
     }
 }

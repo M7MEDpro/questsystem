@@ -3,19 +3,18 @@ package dev.m7med.questsystem;
 import dev.m7med.questsystem.data.MongoDatabaseManager;
 import dev.m7med.questsystem.data.PlayerDataManager;
 import dev.m7med.questsystem.hooks.QuestsPlaceholderExpansion;
+import dev.m7med.questsystem.quest.MovementQuestListener;
+import dev.m7med.questsystem.quest.QuestEventListener;
+import dev.m7med.questsystem.quest.QuestManager;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
-/**
- * The main plugin class for the Quest System.
- * Handles the initialization of the database, data managers, and external
- * hooks.
- */
 public final class Questsystem extends JavaPlugin {
 
     private static Questsystem instance;
     private MongoDatabaseManager mongoDatabaseManager;
     private PlayerDataManager playerDataManager;
+    private QuestManager questManager;
 
     @Override
     public void onEnable() {
@@ -33,6 +32,10 @@ public final class Questsystem extends JavaPlugin {
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             new QuestsPlaceholderExpansion(this, playerDataManager).register();
         }
+
+        questManager = new QuestManager();
+        new QuestEventListener(this, questManager, playerDataManager);
+        new MovementQuestListener(this, questManager, playerDataManager);
     }
 
     @Override
@@ -45,30 +48,17 @@ public final class Questsystem extends JavaPlugin {
         }
     }
 
-    /**
-     * Retrieves the singleton instance of the plugin.
-     *
-     * @return The Questsystem plugin instance.
-     */
     public static Questsystem getInstance() {
         return instance;
     }
-
-    /**
-     * Retrieves the manager responsible for caching and handling player quest data.
-     *
-     * @return The PlayerDataManager.
-     */
     public PlayerDataManager getPlayerDataManager() {
         return playerDataManager;
     }
-
-    /**
-     * Retrieves the manager responsible for MongoDB database operations.
-     *
-     * @return The MongoDatabaseManager.
-     */
     public MongoDatabaseManager getMongoDatabaseManager() {
         return mongoDatabaseManager;
+    }
+
+    public QuestManager getQuestManager() {
+        return questManager;
     }
 }
