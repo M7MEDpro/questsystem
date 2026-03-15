@@ -1,0 +1,12 @@
+# ==========================================
+#         QuestSystem Configuration
+# ==========================================
+
+# Database connection settings
+mongodb:
+  # The connection string for your MongoDB database.
+  uri: "mongodb://localhost:27017"
+  # The name of the database where player progress is stored.
+  database: "quest_system"
+
+# Additional settings for GUI & Languages to be implemented soon.
