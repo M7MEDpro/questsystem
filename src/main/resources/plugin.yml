@@ -1,0 +1,6 @@
+name: questsystem
+version: '1.0-SNAPSHOT'
+main: dev.m7med.questsystem.Questsystem
+api-version: '1.21'
+softdepend:
+  - PlaceholderAPI
