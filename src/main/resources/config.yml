@@ -1,12 +1,138 @@
-# ==========================================
-#         QuestSystem Configuration
-# ==========================================
-
-# Database connection settings
 mongodb:
-  # The connection string for your MongoDB database.
   uri: "mongodb://localhost:27017"
-  # The name of the database where player progress is stored.
   database: "quest_system"
 
-# Additional settings for GUI & Languages to be implemented soon.
+messages:
+  prefix: "&8[&6Quests&8] &7"
+  no_permission: "&cYou do not have permission to do that."
+  player_only: "&cOnly players can run this command."
+  quest_not_found: "&cNo quest found with id '%id%'."
+  player_not_found: "&cCould not find that player's data. Are they online?"
+  progress_set: "&aUpdated &e%player%&a's progress on &e%id% &ato &e%value%&a."
+  progress_reset: "&aReset &e%player%&a's progress on &e%id%&a."
+  plugin_reloaded: "&aReloaded successfully!"
+
+gui:
+  title: "&8▶ &eQuest Menu"
+  size: 54
+
+  progress_bar:
+    symbol_complete: "■"
+    symbol_incomplete: "□"
+    color_complete: "&a"
+    color_incomplete: "&7"
+    length: 10
+
+  filler_item:
+    enabled: true
+    material: "BLACK_STAINED_GLASS_PANE"
+    name: " "
+
+  quest_display:
+    status_locked: "&cNot Started"
+    status_in_progress: "&eIn Progress"
+    status_completed: "&aCompleted"
+    lore_format:
+      - "&8&m------------------------"
+      - "&7Type: &f%type%"
+      - "&7Target: &f%target%"
+      - ""
+      - "&7Progress: &e%progress% &8/ &e%required%"
+      - "&7Status: %status%"
+      - ""
+      - "&f[%bar%&f] &e%percentage%%"
+      - "&8&m------------------------"
+
+quests:
+  first_mining_quest:
+    type: "MINING"
+    target: "DIAMOND_ORE"
+    required_amount: 10
+    display:
+      material: "DIAMOND_PICKAXE"
+      name: "&b&lDiamond Miner"
+      custom_model_data: 0
+      glow: true
+      flags:
+        - HIDE_ATTRIBUTES
+      lore:
+        - "&8&m------------------------"
+        - "&7Mine &b10 Diamond Ore&7."
+        - ""
+        - "&7Progress: &e%progress% &8/ &e%required%"
+        - "&7Status: %status%"
+        - ""
+        - "&f[%bar%&f] &e%percentage%%"
+        - "&8&m------------------------"
+    rewards:
+      - "give %player% diamond 1"
+      - "tell %player% &aYou completed the Diamond Miner quest!"
+
+  first_kill_quest:
+    type: "KILLING"
+    target: "ZOMBIE"
+    required_amount: 25
+    display:
+      material: "IRON_SWORD"
+      name: "&c&lZombie Slayer"
+      custom_model_data: 0
+      glow: false
+      flags:
+        - HIDE_ATTRIBUTES
+      lore:
+        - "&8&m------------------------"
+        - "&7Kill &c25 Zombies&7."
+        - ""
+        - "&7Progress: &e%progress% &8/ &e%required%"
+        - "&7Status: %status%"
+        - ""
+        - "&f[%bar%&f] &e%percentage%%"
+        - "&8&m------------------------"
+    rewards:
+      - "give %player% iron_ingot 10"
+
+  first_running_quest:
+    type: "RUNNING"
+    target: ""
+    required_amount: 5000
+    display:
+      material: "LEATHER_BOOTS"
+      name: "&e&lLong Distance Runner"
+      custom_model_data: 0
+      glow: false
+      flags:
+        - HIDE_ATTRIBUTES
+      lore:
+        - "&8&m------------------------"
+        - "&7Travel &e5000 blocks&7 on foot."
+        - ""
+        - "&7Progress: &e%progress% &8/ &e%required%"
+        - "&7Status: %status%"
+        - ""
+        - "&f[%bar%&f] &e%percentage%%"
+        - "&8&m------------------------"
+    rewards:
+      - "give %player% gold_ingot 5"
+
+  first_explore_quest:
+    type: "EXPLORING"
+    target: "DESERT"
+    required_amount: 60
+    display:
+      material: "COMPASS"
+      name: "&6&lDesert Explorer"
+      custom_model_data: 0
+      glow: false
+      flags:
+        - HIDE_ATTRIBUTES
+      lore:
+        - "&8&m------------------------"
+        - "&7Spend time in a &6Desert biome&7."
+        - ""
+        - "&7Progress: &e%progress% &8/ &e%required%"
+        - "&7Status: %status%"
+        - ""
+        - "&f[%bar%&f] &e%percentage%%"
+        - "&8&m------------------------"
+    rewards:
+      - "give %player% sand 33"

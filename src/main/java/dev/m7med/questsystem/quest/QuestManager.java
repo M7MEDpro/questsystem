@@ -1,29 +1,31 @@
 package dev.m7med.questsystem.quest;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+
 public class QuestManager {
-    private final Map<String, Quest> quests;
-    public QuestManager() {
-        this.quests = new HashMap<>();
+
+    private final Map<String, Quest> quests = new LinkedHashMap<>();
+    private final Map<QuestType, List<Quest>> byType = new EnumMap<>(QuestType.class);
+    public void register(Quest quest) {
+        quests.put(quest.getId(), quest);
+        byType.computeIfAbsent(quest.getType(),
+                t -> new ArrayList<>()).add(quest);
     }
 
-    public void registerQuest(Quest quest) {
-        quests.put(quest.getId(), quest);
-    }
-    public Quest getQuest(String id) {
+    public Quest getById(String id) {
         return quests.get(id);
     }
-    public Collection<Quest> getQuestsByType(QuestType type) {
-        return quests.values().stream()
-                .filter(q -> q.getType() == type)
-                .toList();
+
+    public List<Quest> getByType(QuestType type) {
+        return byType.getOrDefault(type, Collections.emptyList());
     }
-    public Collection<Quest> getAllQuests() {
+
+    public Collection<Quest> getAll() {
         return quests.values();
     }
-    public void clearQuests() {
+
+    public void clear() {
         quests.clear();
+        byType.clear();
     }
 }

@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/questsystem.main.iml" filepath="$PROJECT_DIR$/.idea/modules/questsystem.main.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/questsystem.test.iml" filepath="$PROJECT_DIR$/.idea/modules/questsystem.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/QuestSystem.main.iml" filepath="$PROJECT_DIR$/.idea/modules/QuestSystem.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/QuestSystem.test.iml" filepath="$PROJECT_DIR$/.idea/modules/QuestSystem.test.iml" />
     </modules>
   </component>
 </project>
