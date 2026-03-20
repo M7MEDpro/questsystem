@@ -7,11 +7,7 @@ import dev.m7med.questsystem.quest.Quest;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import studio.mevera.imperat.annotations.Command;
-import studio.mevera.imperat.annotations.Permission;
-import studio.mevera.imperat.annotations.SubCommand;
-import studio.mevera.imperat.annotations.Usage;
-import studio.mevera.imperat.annotations.Suggest;
+import studio.mevera.imperat.annotations.*;
 
 @Command({"questadmin", "qa"})
 @Permission("questsystem.admin")
@@ -35,7 +31,7 @@ public class QuestAdminCommand {
     }
 
     @SubCommand("setprogress")
-    public void setProgress(CommandSender sender, Player target, @Suggest("quest_ids") String id, double val) {
+    public void setProgress(CommandSender sender, Player target, @SuggestionProvider("quest_ids") String id, double val) {
         Quest q = plugin.getQuestManager().getById(id);
         if (q == null) {
             sender.sendMessage(msg("messages.quest_not_found").replace("%id%", id));
@@ -57,7 +53,7 @@ public class QuestAdminCommand {
     }
 
     @SubCommand("reset")
-    public void reset(CommandSender sender, Player target, @Suggest("quest_ids") String id) {
+    public void reset(CommandSender sender, Player target, @SuggestionProvider("quest_ids") String id) {
         PlayerQuestData data = plugin.getPlayerDataManager().get(target);
         if (data == null) {
             sender.sendMessage(msg("messages.player_not_found"));
