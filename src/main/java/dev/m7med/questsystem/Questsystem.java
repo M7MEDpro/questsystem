@@ -19,12 +19,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class Questsystem extends JavaPlugin {
-
     private static Questsystem instance;
-
     private MongoDatabaseManager db;
     private PlayerDataManager dataHandler;
     private QuestManager questHandler;
+    private QuestEventListener questEventListener;
 
     @Override
     public void onEnable() {
@@ -42,7 +41,7 @@ public final class Questsystem extends JavaPlugin {
 
         initQuests();
 
-        new QuestEventListener(this, questHandler, dataHandler);
+        questEventListener = new QuestEventListener(this, questHandler, dataHandler);
         new MovementQuestListener(this, questHandler, dataHandler);
         new GuiListener(this);
 
@@ -52,6 +51,11 @@ public final class Questsystem extends JavaPlugin {
         }
 
         BukkitImperat imperat = BukkitImperat.builder(this).build();
+        imperat.config().registerNamedSuggestionResolver("quest_ids", (context, parameter) ->
+                questHandler.getAll().stream()
+                        .map(Quest::getId)
+                        .toList()
+        );
         imperat.registerCommand(new QuestCommand(this));
         imperat.registerCommand(new QuestAdminCommand(this));
 
@@ -99,9 +103,7 @@ public final class Questsystem extends JavaPlugin {
 
                 ConfigurationSection display = sec.getConfigurationSection("display");
                 if (display != null) {
-                    Material m = Material.matchMaterial(display.getString("material"
-                            , "PAPER"));
-
+                    Material m = Material.matchMaterial(display.getString("material", "PAPER"));
                     if (m != null) mat = m;
                     name = display.getString("name", name);
                     lore = display.getStringList("lore");
@@ -129,4 +131,5 @@ public final class Questsystem extends JavaPlugin {
     public static Questsystem getInstance() { return instance; }
     public PlayerDataManager getPlayerDataManager() { return dataHandler; }
     public QuestManager getQuestManager() { return questHandler; }
+    public QuestEventListener getQuestEventListener() { return questEventListener; }
 }

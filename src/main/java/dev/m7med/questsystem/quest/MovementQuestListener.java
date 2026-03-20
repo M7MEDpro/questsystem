@@ -3,8 +3,10 @@ package dev.m7med.questsystem.quest;
 import dev.m7med.questsystem.Questsystem;
 import dev.m7med.questsystem.data.PlayerDataManager;
 import dev.m7med.questsystem.data.model.PlayerQuestData;
+import dev.m7med.questsystem.data.model.QuestProgress;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -18,14 +20,14 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class MovementQuestListener implements Listener {
-
     private static final long BIOME_THROTTLE_MS = 1_000L;
-
+    private final Questsystem plugin;
     private final QuestManager questManager;
     private final PlayerDataManager dataManager;
     private final Map<UUID, Long> biomeCheckTimestamps = new ConcurrentHashMap<>();
 
     public MovementQuestListener(Questsystem plugin, QuestManager questManager, PlayerDataManager dataManager) {
+        this.plugin = plugin;
         this.questManager = questManager;
         this.dataManager = dataManager;
         Bukkit.getPluginManager().registerEvents(this, plugin);
@@ -64,12 +66,20 @@ public class MovementQuestListener implements Listener {
         for (Quest q : quests) {
             if (data.hasCompleted(q.getId())) continue;
 
-            var prog = data.getOrCreateProgress(q.getId());
+            QuestProgress prog = data.getOrCreateProgress(q.getId());
             if (prog.getProgress() >= q.getRequiredAmount()) continue;
 
+            boolean wasBeforeHalf = prog.getProgress() < q.getRequiredAmount() / 2.0;
             prog.addProgress(dist);
+            boolean isNowHalfOrMore = prog.getProgress() >= q.getRequiredAmount() / 2.0;
+
+            if (wasBeforeHalf && isNowHalfOrMore && prog.getProgress() < q.getRequiredAmount()) {
+                sendHalfwayNotification(player, q);
+            }
+
             if (prog.getProgress() >= q.getRequiredAmount()) {
                 data.completeQuest(q.getId());
+                sendCompletionNotification(player, q);
                 dispatchRewards(player, q);
             }
         }
@@ -88,14 +98,55 @@ public class MovementQuestListener implements Listener {
                     !target.equalsIgnoreCase(world)) continue;
             if (data.hasCompleted(q.getId())) continue;
 
-            var prog = data.getOrCreateProgress(q.getId());
+            QuestProgress prog = data.getOrCreateProgress(q.getId());
             if (prog.getProgress() >= q.getRequiredAmount()) continue;
 
+            boolean wasBeforeHalf = prog.getProgress() < q.getRequiredAmount() / 2.0;
             prog.addProgress(1.0);
+            boolean isNowHalfOrMore = prog.getProgress() >= q.getRequiredAmount() / 2.0;
+
+            if (wasBeforeHalf && isNowHalfOrMore && prog.getProgress() < q.getRequiredAmount()) {
+                sendHalfwayNotification(player, q);
+            }
+
             if (prog.getProgress() >= q.getRequiredAmount()) {
                 data.completeQuest(q.getId());
+                sendCompletionNotification(player, q);
                 dispatchRewards(player, q);
             }
+        }
+    }
+
+    private void sendCompletionNotification(Player player, Quest quest) {
+        List<String> lines = plugin.getConfig().getStringList("messages.quest_completed");
+        for (String line : lines) {
+            player.sendMessage(org.bukkit.ChatColor.translateAlternateColorCodes('&',
+                    line.replace("%quest%", quest.getDisplayName())));
+        }
+        if (plugin.getConfig().getBoolean("sounds.quest_completed.enabled", true)) {
+            playSound(player, "sounds.quest_completed");
+        }
+    }
+
+    private void sendHalfwayNotification(Player player, Quest quest) {
+        List<String> lines = plugin.getConfig().getStringList("messages.quest_halfway");
+        for (String line : lines) {
+            player.sendMessage(org.bukkit.ChatColor.translateAlternateColorCodes('&',
+                    line.replace("%quest%", quest.getDisplayName())));
+        }
+        if (plugin.getConfig().getBoolean("sounds.quest_halfway.enabled", true)) {
+            playSound(player, "sounds.quest_halfway");
+        }
+    }
+
+    private void playSound(Player player, String path) {
+        String soundName = plugin.getConfig().getString(path + ".sound", "ENTITY_EXPERIENCE_ORB_PICKUP");
+        float volume = (float) plugin.getConfig().getDouble(path + ".volume", 1.0);
+        float pitch = (float) plugin.getConfig().getDouble(path + ".pitch", 1.0);
+        try {
+            Sound sound = Sound.valueOf(soundName.toUpperCase());
+            player.playSound(player.getLocation(), sound, volume, pitch);
+        } catch (IllegalArgumentException ignored) {
         }
     }
 
@@ -108,8 +159,15 @@ public class MovementQuestListener implements Listener {
     }
 
     private void dispatchRewards(Player player, Quest quest) {
-        quest.getRewardCommands().forEach(cmd ->
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
-                        cmd.replace("%player%", player.getName())));
+        quest.getRewardCommands().forEach(cmd -> {
+            String parsed = cmd.replace("%player%", player.getName());
+
+            if (parsed.toLowerCase().startsWith("tell ") || parsed.toLowerCase().startsWith("msg ")) {
+                String message = parsed.substring(parsed.indexOf(" ") + 1);
+                player.sendMessage(org.bukkit.ChatColor.translateAlternateColorCodes('&', message));
+            } else {
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), parsed);
+            }
+        });
     }
 }

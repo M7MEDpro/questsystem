@@ -12,6 +12,30 @@ messages:
   progress_reset: "&aReset &e%player%&a's progress on &e%id%&a."
   plugin_reloaded: "&aReloaded successfully!"
 
+  quest_completed:
+    - ""
+    - "&6&l✦ QUEST COMPLETE ✦"
+    - "&7You finished: &e%quest%"
+    - ""
+
+  quest_halfway:
+    - ""
+    - "&e&l◈ Halfway There! &7You're 50%% through &e%quest%&7!"
+    - ""
+
+sounds:
+  quest_completed:
+    enabled: true
+    sound: "ENTITY_PLAYER_LEVELUP"
+    volume: 1.0
+    pitch: 1.0
+
+  quest_halfway:
+    enabled: true
+    sound: "ENTITY_EXPERIENCE_ORB_PICKUP"
+    volume: 1.0
+    pitch: 1.2
+
 gui:
   title: "&8▶ &eQuest Menu"
   size: 54

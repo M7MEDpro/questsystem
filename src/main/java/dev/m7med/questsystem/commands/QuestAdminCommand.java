@@ -11,13 +11,13 @@ import studio.mevera.imperat.annotations.Command;
 import studio.mevera.imperat.annotations.Permission;
 import studio.mevera.imperat.annotations.SubCommand;
 import studio.mevera.imperat.annotations.Usage;
-
+import studio.mevera.imperat.annotations.Suggest;
 
 @Command({"questadmin", "qa"})
 @Permission("questsystem.admin")
-
 public class QuestAdminCommand {
     private final Questsystem plugin;
+
     public QuestAdminCommand(Questsystem plugin) {
         this.plugin = plugin;
     }
@@ -35,7 +35,7 @@ public class QuestAdminCommand {
     }
 
     @SubCommand("setprogress")
-    public void setProgress(CommandSender sender, Player target, String id, double val) {
+    public void setProgress(CommandSender sender, Player target, @Suggest("quest_ids") String id, double val) {
         Quest q = plugin.getQuestManager().getById(id);
         if (q == null) {
             sender.sendMessage(msg("messages.quest_not_found").replace("%id%", id));
@@ -48,8 +48,7 @@ public class QuestAdminCommand {
             return;
         }
 
-        data.getCompletedQuests().remove(id);
-        data.getActiveQuests().put(id, new QuestProgress(val));
+        plugin.getQuestEventListener().awardExact(target, id, val);
 
         sender.sendMessage(msg("messages.progress_set")
                 .replace("%player%", target.getName())
@@ -58,7 +57,7 @@ public class QuestAdminCommand {
     }
 
     @SubCommand("reset")
-    public void reset(CommandSender sender, Player target, String id) {
+    public void reset(CommandSender sender, Player target, @Suggest("quest_ids") String id) {
         PlayerQuestData data = plugin.getPlayerDataManager().get(target);
         if (data == null) {
             sender.sendMessage(msg("messages.player_not_found"));
