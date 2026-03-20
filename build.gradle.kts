@@ -15,10 +15,12 @@ repositories {
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.21.8-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
     compileOnly("me.clip:placeholderapi:2.11.6")
-    implementation("studio.mevera:imperat-core:3.0.0")
-    implementation("studio.mevera:imperat-bukkit:3.0.0")
+
+    implementation("studio.mevera:imperat-core:2.4.2")
+    implementation("studio.mevera:imperat-bukkit:2.4.2")
+
     implementation("org.mongodb:mongodb-driver-sync:5.2.1")
 }
 
@@ -53,6 +55,6 @@ tasks {
     }
 
     runServer {
-        minecraftVersion("1.21")
+        minecraftVersion("1.21.4")
     }
 }

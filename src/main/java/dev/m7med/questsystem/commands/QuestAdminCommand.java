@@ -7,23 +7,24 @@ import dev.m7med.questsystem.quest.Quest;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import studio.mevera.imperat.annotations.types.Execute;
-import studio.mevera.imperat.annotations.types.Permission;
-import studio.mevera.imperat.annotations.types.RootCommand;
-import studio.mevera.imperat.annotations.types.SubCommand;
+import studio.mevera.imperat.annotations.Command;
+import studio.mevera.imperat.annotations.Permission;
+import studio.mevera.imperat.annotations.SubCommand;
+import studio.mevera.imperat.annotations.Usage;
 
 
-@RootCommand({"questadmin", "qa"})
+@Command({"questadmin", "qa"})
 @Permission("questsystem.admin")
+
 public class QuestAdminCommand {
     private final Questsystem plugin;
     public QuestAdminCommand(Questsystem plugin) {
         this.plugin = plugin;
     }
 
-    @Execute
+    @Usage
     public void usage(CommandSender sender) {
-        sender.sendMessage(ChatColor.RED + "Use /qa <reload|setprogress|reset>");
+        sender.sendMessage(ChatColor.RED + "Use /qa <reload | setprogress | reset>");
     }
 
     @SubCommand("reload")
